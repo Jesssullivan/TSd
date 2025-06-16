@@ -1,6 +1,6 @@
 {
-  "name": "@tinyland/tsd",
-  "version": "0.0.1",
+  "name": "@tummycrypt/tsd",
+  "version": "0.1.0",
   "type": "module",
   "description": "Next-Generation Translation System for SvelteKit",
   "scripts": {

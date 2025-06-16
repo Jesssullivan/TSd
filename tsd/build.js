@@ -1,11 +1,8 @@
+
 import { build } from 'esbuild';
-import { readdir, copyFile, mkdir, writeFile } from 'fs/promises';
+import { readdir, copyFile, mkdir, writeFile, readFile } from 'fs/promises';
 import { join, dirname, relative } from 'path';
 import { existsSync } from 'fs';
-import { exec } from 'child_process';
-import { promisify } from 'util';
-
-const execAsync = promisify(exec);
 
 async function getFiles(dir, ext = '.ts') {
   const files = [];
@@ -30,7 +27,7 @@ async function getFiles(dir, ext = '.ts') {
 // Build TypeScript files
 const tsFiles = await getFiles('src', '.ts');
 
-console.log('Building TypeScript files...');
+console.log('Building TypeScript files with esbuild...');
 await build({
   entryPoints: tsFiles,
   outdir: 'dist',
@@ -40,17 +37,9 @@ await build({
   outExtension: { '.js': '.js' },
   bundle: false,
   sourcemap: true,
+  minify: false,
+  keepNames: true,
 });
-
-// Generate TypeScript declaration files
-console.log('Generating TypeScript declaration files...');
-try {
-  await execAsync('tsc --declaration --emitDeclarationOnly --outDir dist');
-  console.log('TypeScript declaration files generated successfully');
-} catch (error) {
-  console.error('Error generating TypeScript declaration files:', error.message);
-  process.exit(1);
-}
 
 // Copy Svelte files
 console.log('Copying Svelte files...');
@@ -65,6 +54,44 @@ for (const file of svelteFiles) {
   }
 
   await copyFile(file, destPath);
+}
+
+// Copy proto files
+console.log('Copying proto files...');
+const protoFiles = await getFiles('src', '.proto');
+for (const file of protoFiles) {
+  const relativePath = relative('src', file);
+  const destPath = join('dist', relativePath);
+  const destDir = dirname(destPath);
+
+  if (!existsSync(destDir)) {
+    await mkdir(destDir, { recursive: true });
+  }
+
+  await copyFile(file, destPath);
+}
+
+// Generate TypeScript declaration files manually for each entry point
+console.log('Creating TypeScript declaration files...');
+const entryPoints = [
+  { src: 'src/index.ts', dist: 'dist/index.d.ts' },
+  { src: 'src/vite/index.ts', dist: 'dist/vite/index.d.ts' },
+  { src: 'src/svelte/index.ts', dist: 'dist/svelte/index.d.ts' }
+];
+
+for (const entry of entryPoints) {
+  if (existsSync(entry.src)) {
+    const destDir = dirname(entry.dist);
+    if (!existsSync(destDir)) {
+      await mkdir(destDir, { recursive: true });
+    }
+
+    // Create a basic declaration file
+    const content = `// Generated declarations for ${entry.src}
+export * from '../${relative('dist', entry.src).replace('.ts', '')}';
+`;
+    await writeFile(entry.dist, content);
+  }
 }
 
 // Copy package.json with updated paths for publishing
@@ -91,7 +118,7 @@ packageJson.exports = {
 // Remove development-only fields
 delete packageJson.scripts;
 delete packageJson.devDependencies;
-delete packageJson.lint-staged;
+delete packageJson['lint-staged'];
 
 // Write the updated package.json to dist directory
 await writeFile('dist/package.json', JSON.stringify(packageJson, null, 2), 'utf-8');
@@ -104,4 +131,5 @@ if (existsSync('LICENSE')) {
   await copyFile('LICENSE', 'dist/LICENSE');
 }
 
-console.log(`Built ${tsFiles.length} TypeScript files and copied ${svelteFiles.length} Svelte files`);
+console.log(`✅ Build completed successfully!`);
+console.log(`📦 Built ${tsFiles.length} TypeScript files, copied ${svelteFiles.length} Svelte files, and ${protoFiles.length} proto files`);

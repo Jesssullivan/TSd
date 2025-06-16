@@ -56,12 +56,16 @@ export function createGrpcWebServer(viteServer: ViteDevServer, translationManage
     console.log('[TSd gRPC-Web] Translate request:', { text, native_locale, target_locale });
 
     try {
-      const key = await translationManager.addTranslationRequest(text, native_locale);
-      const translated = await translationManager.getOrCreateTranslation(
+      const keyMonad = await translationManager.addTranslationRequest(text, native_locale);
+      const key = await keyMonad.getOrElse('');
+      
+      const translatedMonad = await translationManager.getOrCreateTranslation(
         text,
         native_locale,
         target_locale
       );
+      
+      const translated = await translatedMonad.getOrElse(text);
 
       console.log('[TSd gRPC-Web] Translation response:', { key, translated });
 

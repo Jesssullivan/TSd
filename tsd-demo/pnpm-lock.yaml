@@ -5,15 +5,15 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  '@tinyland/tsd': link:../../packages/tsd
+  '@tummycrypt/tsd': link:../tsd
 
 importers:
 
   .:
     dependencies:
-      '@tinyland/tsd':
-        specifier: link:../../packages/tsd
-        version: link:../../packages/tsd
+      '@tummycrypt/tsd':
+        specifier: link:../tsd
+        version: link:../tsd
     devDependencies:
       '@sveltejs/adapter-auto':
         specifier: ^6.0.0

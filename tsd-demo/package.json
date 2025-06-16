@@ -10,7 +10,7 @@
 		"prepare": "svelte-kit sync || echo ''"
 	},
 	"dependencies": {
-		"@tinyland/tsd": "^0.0.1"
+		"@tummycrypt/tsd": "link:../tsd"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^6.0.0",
@@ -26,7 +26,7 @@
 			"esbuild"
 		],
 		"overrides": {
-			"@tinyland/tsd": "link:../tsd"
+			"@tummycrypt/tsd": "link:../tsd"
 		}
 	}
 }

@@ -35,7 +35,7 @@ The package provides detailed console logging to help you understand the transla
 
 ```javascript
 // vite.config.js
-import { tsdVitePlugin } from '@tinyland/tsd/vite';
+import { tsdVitePlugin } from '@tummycrypt/tsd/vite';
 
 export default {
   plugins: [

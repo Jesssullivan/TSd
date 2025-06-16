@@ -7,3 +7,9 @@ declare module 'cors' {
   const cors: any;
   export default cors;
 }
+
+declare module '*.svelte' {
+  import type { ComponentType } from 'svelte';
+  const component: ComponentType;
+  export default component;
+}

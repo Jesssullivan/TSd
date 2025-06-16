@@ -1,21 +1,21 @@
 <script lang="ts">
-	import { Tsd, setLocale, localeStore } from '@tinyland/tsd/svelte';
+	import { Tsd, setLocale, localeStore } from '@tummycrypt/tsd/svelte';
 	import { onMount, onDestroy } from 'svelte';
 	import { goto } from '$app/navigation';
-	
+
 	export let data;
-	
+
 	let currentLocale = data.locale;
 	let unsubscribe: () => void;
 	let connectionInfo: any = {};
 	let showDebug = true;
 	let isNavigating = false;
-	
+
 	onMount(() => {
 		unsubscribe = localeStore.subscribe((locale) => {
 			currentLocale = locale;
 		});
-		
+
 		// Get connection info from global client
 		const checkClient = () => {
 			const client = (window as any).__TSD_GRPC_CLIENT__;
@@ -26,15 +26,27 @@
 			}
 		};
 		checkClient();
+
+		// Listen for locale navigation events from TSD
+		const handleLocaleNavigate = (event: CustomEvent) => {
+			const { path } = event.detail;
+			// Use goto without triggering the warning
+			goto(path, { replaceState: true, noScroll: true, keepFocus: true });
+		};
+		window.addEventListener('tsd:locale-navigate', handleLocaleNavigate as EventListener);
+
+		return () => {
+			window.removeEventListener('tsd:locale-navigate', handleLocaleNavigate as EventListener);
+		};
 	});
-	
+
 	onDestroy(() => {
 		if (unsubscribe) unsubscribe();
 	});
-	
+
 	async function switchLocale(locale: string) {
 		if (isNavigating || locale === currentLocale) return;
-		
+
 		isNavigating = true;
 		try {
 			// Update locale in store first
@@ -52,9 +64,9 @@
 		<h1><Tsd>Welcome to TSd Demo</Tsd></h1>
 		<div class="connection-status">
 			{#if connectionInfo.isEnvoy}
-				<span class="status envoy">🚀 Envoy Proxy</span>
+				<span class="status envoy">🚀 gRPC-Web via Envoy</span>
 			{:else}
-				<span class="status http">🌐 HTTP/JSON</span>
+				<span class="status http">🌐 gRPC-Web over HTTP/JSON</span>
 			{/if}
 			<span class="env">{connectionInfo.environment || 'loading...'}</span>
 		</div>
@@ -84,13 +96,13 @@
 	<main class:loading={isNavigating}>
 		<section class="demo-section">
 			<h2><Tsd>Translation Examples</Tsd></h2>
-			
+
 			<div class="example">
 				<h3><Tsd>Simple Text</Tsd></h3>
 				<p><Tsd>Hello, world!</Tsd></p>
 				<p><Tsd>This is a test of the TSd translation system.</Tsd></p>
 			</div>
-			
+
 			<div class="example">
 				<h3><Tsd>Common Phrases</Tsd></h3>
 				<p><Tsd>Welcome</Tsd></p>
@@ -98,26 +110,27 @@
 				<p><Tsd>Good morning</Tsd></p>
 				<p><Tsd>Goodbye</Tsd></p>
 			</div>
-			
+
 			<div class="example">
 				<h3><Tsd>Longer Text</Tsd></h3>
 				<p><Tsd>This translation system uses just-in-time translation with caching to provide fast, efficient multilingual support for your application.</Tsd></p>
 			</div>
 		</section>
-		
+
 		<section class="info-section">
 			<h2>Current Status</h2>
 			<ul>
 				<li>Locale: <strong>{currentLocale}</strong></li>
-				<li>Protocol: <strong>{connectionInfo.protocol || 'loading...'}</strong></li>
+				<li>API: <strong>gRPC-Web Translation Service</strong></li>
+				<li>Transport: <strong>{connectionInfo.protocol || 'loading...'}</strong></li>
 				<li>Environment: <strong>{connectionInfo.environment || 'loading...'}</strong></li>
-				<li>Envoy: <strong>{connectionInfo.isEnvoy ? 'Yes' : 'No'}</strong></li>
+				<li>Proxy: <strong>{connectionInfo.isEnvoy ? 'Envoy' : 'Direct HTTP'}</strong></li>
 			</ul>
-			
+
 			<button on:click={() => showDebug = !showDebug} class="debug-toggle">
 				{showDebug ? 'Hide' : 'Show'} Console Logs
 			</button>
-			
+
 			{#if showDebug}
 				<div class="debug-info">
 					<p>Open your browser console to see detailed translation logs including:</p>
@@ -130,6 +143,19 @@
 					</ul>
 				</div>
 			{/if}
+		</section>
+
+		<section class="info-section">
+			<h2>Architecture</h2>
+			<div class="architecture-info">
+				<p><strong>TSd uses gRPC-Web API</strong> for all translation operations:</p>
+				<ul>
+					<li><code>TranslationService.Translate</code> - Get translations</li>
+					<li><code>TranslationService.SubscribeTranslations</code> - Real-time updates via SSE</li>
+					<li><code>TranslationService.GetTranslations</code> - Batch operations</li>
+				</ul>
+				<p>In development, the gRPC-Web API is served over HTTP/JSON for easy debugging. In production with Envoy, it uses native gRPC-Web binary protocol for better performance.</p>
+			</div>
 		</section>
 	</main>
 </div>
@@ -198,7 +224,7 @@
 		transition: all 0.2s;
 		position: relative;
 	}
-	
+
 	button:disabled {
 		opacity: 0.6;
 		cursor: not-allowed;
@@ -289,11 +315,43 @@
 		border: none;
 		padding: 0.25rem 0;
 	}
-	
+
+	.architecture-info {
+		font-size: 0.95rem;
+		line-height: 1.6;
+	}
+
+	.architecture-info code {
+		background: #f0f0f0;
+		padding: 0.2rem 0.4rem;
+		border-radius: 3px;
+		font-family: 'Consolas', 'Monaco', monospace;
+		font-size: 0.9em;
+	}
+
+	.architecture-info ul {
+		margin: 1rem 0;
+		padding-left: 2rem;
+		list-style: none;
+	}
+
+	.architecture-info li {
+		padding: 0.3rem 0;
+		border: none;
+	}
+
+	.architecture-info li::before {
+		content: '→ ';
+		color: #ff3e00;
+		font-weight: bold;
+		margin-left: -1.5rem;
+		margin-right: 0.5rem;
+	}
+
 	main {
 		transition: opacity 0.2s ease-in-out;
 	}
-	
+
 	main.loading {
 		opacity: 0.6;
 		pointer-events: none;

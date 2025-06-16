@@ -2,20 +2,20 @@
 
 *High performance localization system for SvelteKit*
 
-[![npm version](https://img.shields.io/npm/v/@tinyland/tsd.svg)](https://www.npmjs.com/package/@tinyland/tsd)
+[![npm version](https://img.shields.io/npm/v/@tummycrypt/tsd.svg)](https://www.npmjs.com/package/@tummycrypt/tsd)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 ## Installation
 
 ```bash
 # npm
-npm install @tinyland/tsd
+npm install @tummycrypt/tsd
 
 # pnpm
-pnpm add @tinyland/tsd
+pnpm add @tummycrypt/tsd
 
 # yarn
-yarn add @tinyland/tsd
+yarn add @tummycrypt/tsd
 ```
 
 
@@ -59,7 +59,7 @@ TSd (Translation System Daemon) is a modern, high-performance translation plugin
 // vite.config.ts
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
-import { tsdVitePlugin } from '@tinyland/tsd/vite';
+import { tsdVitePlugin } from '@tummycrypt/tsd/vite';
 
 export default defineConfig({
   plugins: [
@@ -97,7 +97,7 @@ src/routes/
 
 ```svelte
 <script lang="ts">
-  import { Tsd, setLocale, localeStore } from '@tinyland/tsd/svelte';
+  import { Tsd, setLocale, localeStore } from '@tummycrypt/tsd/svelte';
 </script>
 
 <h1><Tsd>Welcome to our site!</Tsd></h1>
@@ -135,7 +135,7 @@ interface TsdConfig {
 
 ```typescript
 // Import components and utilities
-import { Tsd, setLocale, getLocale, localeStore } from '@tinyland/tsd/svelte';
+import { Tsd, setLocale, getLocale, localeStore } from '@tummycrypt/tsd/svelte';
 
 // Get current locale
 const currentLocale = getLocale(); // 'en'
@@ -276,4 +276,4 @@ To deploy using GitHub Actions:
 Note: You need to have an NPM token stored as a secret named `NPM_TOKEN` in your GitHub repository.
 
 ## 📄 License
-MIT © Tinyland
+MIT © Jess Sullivan

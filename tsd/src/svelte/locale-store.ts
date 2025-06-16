@@ -72,10 +72,20 @@ export function setLocale(locale: Locale) {
     // Add new locale
     const newPath = `/${locale}${cleanPath}`;
 
-    // Use history API to update URL without reload
-    window.history.pushState({}, '', newPath);
+    // Check if we're in SvelteKit by looking for goto function
+    if (typeof window !== 'undefined' && '__sveltekit' in window) {
+      // In SvelteKit, dispatch event and let the app handle navigation
+      window.dispatchEvent(
+        new CustomEvent('tsd:locale-navigate', {
+          detail: { path: newPath, locale, previousLocale },
+        })
+      );
+    } else {
+      // Fallback for non-SvelteKit environments
+      window.history.pushState({}, '', newPath);
+    }
 
-    // Dispatch custom event
+    // Dispatch locale change event
     window.dispatchEvent(
       new CustomEvent('tsd:locale-changed', {
         detail: { locale, previousLocale },
