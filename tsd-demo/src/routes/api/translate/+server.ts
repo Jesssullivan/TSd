@@ -15,7 +15,7 @@ export const POST: RequestHandler = async ({ request }) => {
 				source: from,
 				target: to,
 				format: 'text',
-				api_key: '1b62680e-9bf3-4988-bfc3-a332f98e6da3',
+				api_key: '',
 			}),
 		});
 		

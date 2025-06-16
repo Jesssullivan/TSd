@@ -8,7 +8,7 @@ export default defineConfig({
 		tsdVitePlugin({
 			translationProvider: {
 				type: 'libretranslate',
-				apiKey: '1b62680e-9bf3-4988-bfc3-a332f98e6da3',
+				apiKey: '',
 			},
 			defaultLocale: 'en',
 			supportedLocales: ['en', 'es', 'fr', 'de', 'ja', 'zh'],

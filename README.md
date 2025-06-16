@@ -1,8 +1,22 @@
 # TSd
 
-*Interim home for my high performance localization + node package*
+*High performance localization system for SvelteKit*
 
-*Note, this is very little artifact I realized may be of use outside of my private pet tinkerings.   Please excuse the clear disconnect from it's parent system right now :sweat_smile: I'll try to buff it up and get the package into some registeries later this week.  (It has been incubating on in a massive Nx + Meson monorepo as part of a way, *way* bigger HPC project of mine called tinyland, a project that has been under development over the last few years, and may never see the light of day)*
+[![npm version](https://img.shields.io/npm/v/@tinyland/tsd.svg)](https://www.npmjs.com/package/@tinyland/tsd)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+
+## Installation
+
+```bash
+# npm
+npm install @tinyland/tsd
+
+# pnpm
+pnpm add @tinyland/tsd
+
+# yarn
+yarn add @tinyland/tsd
+```
 
 
 ## TSd - Next-Generation Translation System for SvelteKit
@@ -31,10 +45,10 @@ TSd (Translation System Daemon) is a modern, high-performance translation plugin
          │                       │                          │
          │                       │                          │
          ▼                       ▼                          │
-┌─────────────────┐     ┌──────────────────┐                │
-│  Locale Store   │     │ Translation Cache│◀───────────────┘
-│ (Reactive State)│     │   (File System)  │
-└─────────────────┘     └──────────────────┘
+┌─────────────────┐     ┌───────────────────┐               │
+│  Locale Store   │     │ Translation Cache │◀──────────────┘
+│ (Reactive State)│     │   (File System)   │
+└─────────────────┘     └───────────────────┘
 ```
 
 ## 🚦 Quick Start
@@ -227,6 +241,39 @@ TSd offers a different approach than traditional i18n libraries:
 - **Streaming**: Real-time updates via SSE or gRPC streaming
 - **Tree-shaking**: Only used translations are included in bundles
 
+## 🤝 Contributing
+
+Contributions are welcome! Here's how you can contribute:
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/my-feature`
+3. Commit your changes: `git commit -am 'Add my feature'`
+4. Push to the branch: `git push origin feature/my-feature`
+5. Submit a pull request
+
+## 📦 Deployment
+
+This package is automatically published to NPM using GitHub Actions when a new release is created.
+
+### Manual Deployment
+
+To manually deploy a new version:
+
+1. Update the version in `tsd/package.json`
+2. Build the package: `cd tsd && pnpm build`
+3. Publish to NPM: `cd tsd && npm publish`
+
+### GitHub Actions Deployment
+
+To deploy using GitHub Actions:
+
+1. Go to the Actions tab in the GitHub repository
+2. Select the "Publish to NPM" workflow
+3. Click "Run workflow"
+4. Enter the version type (patch, minor, major) or a specific version
+5. Click "Run workflow"
+
+Note: You need to have an NPM token stored as a secret named `NPM_TOKEN` in your GitHub repository.
+
 ## 📄 License
 MIT © Tinyland
-
