@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/svelte/index.ts"],
-  "sourcesContent": ["export { default as Tsd } from './Tsd.svelte';\nexport { localeStore, setLocale, getLocale } from './locale-store.js';\n"],
-  "mappings": "AAAA,SAAoB,WAAXA,gBAAsB;AAC/B,SAAS,aAAa,WAAW,iBAAiB;",
-  "names": ["default"]
-}

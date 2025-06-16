@@ -1,1 +1,0 @@
-{"version":3,"file":"grpc-web-server.d.ts","sourceRoot":"","sources":["../../src/vite/grpc-web-server.ts"],"names":[],"mappings":"AAMA,OAAO,KAAK,EAAE,aAAa,EAAE,MAAM,MAAM,CAAC;AAK1C,wBAAgB,mBAAmB,CAAC,UAAU,EAAE,aAAa,EAAE,kBAAkB,EAAE,GAAG;qBA+HhD,MAAM;EAqC3C"}
