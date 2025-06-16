@@ -2,7 +2,7 @@
 
 *Interim home for my high performance localization + node package*
 
-Note, this is very little artifact I realized may be of use outside of my private pet tinkerings.   Please excuse the clear disconnect from it's parent system right now :sweat_smile: I'll try to buff it up and get the package into some registeries later this week.  (It has been incubating on in a massive Nx + Meson monorepo as part of a way, *way* bigger HPC project of mine called tinyland, a project that has been under development over the last few years, and may never see the light of day)
+*Note, this is very little artifact I realized may be of use outside of my private pet tinkerings.   Please excuse the clear disconnect from it's parent system right now :sweat_smile: I'll try to buff it up and get the package into some registeries later this week.  (It has been incubating on in a massive Nx + Meson monorepo as part of a way, *way* bigger HPC project of mine called tinyland, a project that has been under development over the last few years, and may never see the light of day)*
 
 
 ## TSd - Next-Generation Translation System for SvelteKit
