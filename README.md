@@ -37,14 +37,6 @@ TSd (Translation System Daemon) is a modern, high-performance translation plugin
 └─────────────────┘     └──────────────────┘
 ```
 
-## 🛠 Installation
-
-```bash
-npm install @tinyland/tsd
-# or
-pnpm add @tinyland/tsd
-```
-
 ## 🚦 Quick Start
 
 ### 1. Configure Vite
