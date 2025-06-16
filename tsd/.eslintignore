@@ -1,0 +1,9 @@
+node_modules
+build
+dist
+.svelte-kit
+.turbo
+*.min.js
+*.min.css
+coverage
+*.proto

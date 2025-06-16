@@ -1,11 +1,4 @@
-# TSd
-*Interim home for my high performance localization + globalization package*
-
-Note, this is very little part of a way, *way* bigger project of mine called tinyland.   Please excuse the clear disconnect from it's build system :sweat_smile:
-
-
-
-## TSd - Next-Generation Translation System for SvelteKit
+# TSd - Next-Generation Translation System for SvelteKit
 
 TSd (Translation System Daemon) is a modern, high-performance translation plugin for SvelteKit that provides just-in-time translation with automatic caching, gRPC support, and Kubernetes-ready architecture.
 
@@ -277,5 +270,8 @@ MIT © Tinyland
 
 Contributions are welcome! Please ensure all code passes validation:
 
+```bash
+pnpm run validate
+```
 
 See the [contribution guide](../../docs/CONTRIBUTING.md) for more details.
