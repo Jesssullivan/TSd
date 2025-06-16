@@ -197,41 +197,7 @@ tsdVitePlugin({
 
 See `k8s/example-deployment.yaml` for a complete Kubernetes example.
 
-## 🧪 Development
 
-### Setup
-
-```bash
-# Install dependencies
-pnpm install
-
-# Run linting
-pnpm run lint
-
-# Run type checking
-pnpm run type-check
-
-# Format code
-pnpm run format
-
-# Run all validations
-pnpm run validate
-```
-
-### Project Structure
-
-```
-packages/tsd/
-├── src/
-│   ├── client/           # Browser-side gRPC client
-│   ├── lib/             # Core libraries (translation, envoy discovery)
-│   ├── proto/           # Protocol buffer definitions
-│   ├── svelte/          # Svelte components and stores
-│   └── vite/            # Vite plugin and server
-├── k8s/                 # Kubernetes examples
-├── docs/                # Additional documentation
-└── scripts/             # Build and utility scripts
-```
 
 ### Code Quality
 
@@ -262,12 +228,5 @@ TSd offers a different approach than traditional i18n libraries:
 - **Tree-shaking**: Only used translations are included in bundles
 
 ## 📄 License
-
 MIT © Tinyland
 
-## 🤝 Contributing
-
-Contributions are welcome! Please ensure all code passes validation:
-
-
-See the [contribution guide](../../docs/CONTRIBUTING.md) for more details.
