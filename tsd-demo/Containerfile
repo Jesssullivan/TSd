@@ -1,0 +1,67 @@
+FROM node:20-alpine AS builder
+
+# Install build dependencies
+RUN apk add --no-cache python3 make g++ git
+
+# Install pnpm
+RUN npm install -g pnpm
+
+WORKDIR /app
+
+# Copy package files
+COPY package.json pnpm-lock.yaml ./
+
+# Install dependencies
+RUN pnpm install --frozen-lockfile
+
+# Copy application files
+COPY . .
+
+# Install adapter-node for production build
+RUN pnpm add -D @sveltejs/adapter-node
+
+# Use production config for build
+RUN cp svelte.config.production.ts svelte.config.ts
+
+# Build the application
+RUN pnpm build
+
+# Production stage
+FROM node:20-alpine
+
+# Install curl for health checks
+RUN apk add --no-cache curl
+
+WORKDIR /app
+
+# Copy built application from adapter-node output
+COPY --from=builder /app/build /app/build
+COPY --from=builder /app/package.json /app/package.json
+
+# Only copy production dependencies
+COPY --from=builder /app/node_modules /app/node_modules
+
+# Create non-root user
+RUN adduser -D -u 1001 -G root sveltekit
+
+# Change ownership
+RUN chown -R sveltekit:root /app
+
+USER sveltekit
+
+# SvelteKit uses port 3000 by default in production
+ENV PORT=3000
+ENV HOST=0.0.0.0
+ENV NODE_ENV=production
+
+# Set Envoy endpoint for production
+ENV VITE_ENVOY_ENDPOINT=http://envoy:8080
+
+# Set LibreTranslate URL for production
+ENV VITE_LIBRETRANSLATE_URL=http://libretranslate:5000
+ENV LIBRETRANSLATE_URL=http://libretranslate:5000
+
+EXPOSE 3000
+
+# Use node directly to run the built app from adapter-node
+CMD ["node", "build/index.js"]

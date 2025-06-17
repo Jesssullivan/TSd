@@ -1,0 +1,34 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Create package.json for dependencies
+RUN echo '{"name":"grpc-server","version":"1.0.0","dependencies":{}}' > package.json
+
+# Install required packages locally
+RUN npm install @grpc/grpc-js @grpc/proto-loader node-fetch@2
+
+# Copy the proto file from the tsd package
+RUN mkdir -p /app/proto && \
+    npm pack @tummycrypt/tsd@latest && \
+    tar -xzf tummycrypt-tsd-*.tgz && \
+    cp package/dist/proto/translation.proto /app/proto/ && \
+    rm -rf package tummycrypt-tsd-*.tgz
+
+# Copy the gRPC server script
+COPY grpc-server.js /app/
+
+# Make it executable
+RUN chmod +x grpc-server.js
+
+# Create non-root user
+RUN adduser -D -u 1001 -G root grpc
+
+# Change ownership
+RUN chown -R grpc:root /app
+
+USER grpc
+
+EXPOSE 50051
+
+CMD ["node", "grpc-server.js"]

@@ -1,0 +1,113 @@
+version: '3.8'
+
+services:
+  # LibreTranslate service for translations
+  libretranslate:
+    image: libretranslate/libretranslate:latest
+    container_name: tsd-libretranslate
+    environment:
+      # Limit to only the languages we support in the demo
+      LT_LOAD_ONLY: "en,es,fr,de,ja,zh"
+      # Disable API keys for demo
+      LT_REQ_LIMIT: "0"
+      LT_CHAR_LIMIT: "5000"
+      # Enable suggestions
+      LT_SUGGESTIONS: "true"
+      # Disable file translation for security
+      LT_DISABLE_FILES_TRANSLATION: "true"
+    expose:
+      - "5000"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/languages"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Envoy proxy for gRPC-Web support
+  envoy:
+    image: envoyproxy/envoy:v1.27-latest
+    container_name: tsd-envoy
+    expose:
+      - "8080"
+      - "9901"
+    volumes:
+      - ./envoy.yaml:/etc/envoy/envoy.yaml:ro
+    command: ["-c", "/etc/envoy/envoy.yaml", "--log-level", "info"]
+    user: "1000:1000"
+    depends_on:
+      libretranslate:
+        condition: service_healthy
+      tsd-grpc:
+        condition: service_started
+    restart: unless-stopped
+
+  # gRPC translation service
+  tsd-grpc:
+    build:
+      context: .
+      dockerfile: Containerfile.grpc
+    container_name: tsd-grpc-service
+    environment:
+      LIBRETRANSLATE_URL: "http://libretranslate:5000"
+      PORT: "50051"
+    expose:
+      - "50051"
+    depends_on:
+      libretranslate:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # SvelteKit TSd Demo Application
+  tsd-app:
+    build:
+      context: .
+      dockerfile: Containerfile
+    container_name: tsd-app
+    environment:
+      NODE_ENV: "production"
+      PORT: "3000"
+      HOST: "0.0.0.0"
+      VITE_ENVOY_ENDPOINT: "http://envoy:8080"
+      ORIGIN: "http://localhost:3000"
+    expose:
+      - "3000"
+    depends_on:
+      envoy:
+        condition: service_started
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Caddy web server (tinywaffle)
+  caddy:
+    image: caddy:2-alpine
+    container_name: tsd-caddy
+    ports:
+      - "3000:80"     # Production app access
+      - "9091:9091"   # Caddy metrics (optional)
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      tsd-app:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  caddy_data:
+  caddy_config:
+
+networks:
+  default:
+    name: tsd-network

@@ -4,29 +4,63 @@
 	"version": "0.0.1",
 	"type": "module",
 	"scripts": {
+		"// Development": "Local development with hot reload",
 		"dev": "vite dev",
+		"dev:host": "vite dev --host",
+		"dev:envoy": "VITE_ENVOY_ENDPOINT=http://localhost:8080 vite dev --host",
+		"// Build": "Production builds",
 		"build": "vite build",
+		"build:prod": "NODE_ENV=production vite build",
+		"build:clean": "rm -rf .svelte-kit build dist",
+		"// Preview": "Preview production build locally",
 		"preview": "vite preview",
-		"prepare": "svelte-kit sync || echo ''"
-	},
-	"dependencies": {
-		"@tummycrypt/tsd": "link:../tsd"
+		"preview:host": "vite preview --host",
+		"// Production": "Full production stack with containers",
+		"prod:build": "pnpm build:prod && podman-compose build",
+		"prod:rebuild": "pnpm build:clean && pnpm prod:build --no-cache",
+		"prod:up": "podman-compose up -d",
+		"prod:down": "podman-compose down",
+		"prod:restart": "pnpm prod:down && pnpm prod:up",
+		"prod:logs": "podman-compose logs -f",
+		"prod:status": "podman-compose ps",
+		"// Demo": "Quick demo commands",
+		"demo:dev": "pnpm dev:host",
+		"demo:preview": "pnpm build && pnpm preview:host",
+		"demo:prod": "pnpm prod:up && echo 'Production demo at http://localhost:3000'",
+		"// Testing": "Comprehensive test suites",
+		"test": "pnpm test:all",
+		"test:all": "node scripts/test-all.js",
+		"test:dev": "node scripts/test-dev.js",
+		"test:preview": "node scripts/test-preview.js",
+		"test:envoy": "node scripts/test-envoy.js",
+		"test:link": "node scripts/test-link.js",
+		"test:clean": "rm -rf .tsd-cache",
+		"// Utils": "Utility commands",
+		"clean": "pnpm build:clean && pnpm test:clean",
+		"prepare": "svelte-kit sync || echo ''",
+		"kill-port": "npx kill-port",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^6.0.0",
+		"@sveltejs/adapter-node": "^5.2.12",
 		"@sveltejs/kit": "^2.16.0",
 		"@sveltejs/vite-plugin-svelte": "^5.0.0",
 		"@types/node": "^24.0.1",
+		"kill-port": "^2.0.1",
 		"svelte": "^5.0.0",
+		"svelte-check": "^3.0.0",
 		"typescript": "^5.8.3",
 		"vite": "^6.2.6"
 	},
 	"pnpm": {
 		"onlyBuiltDependencies": [
-			"esbuild"
-		],
-		"overrides": {
-			"@tummycrypt/tsd": "link:../tsd"
-		}
+			"esbuild",
+			"protobufjs"
+		]
+	},
+	"dependencies": {
+		"@tummycrypt/tsd": "latest"
 	}
 }
