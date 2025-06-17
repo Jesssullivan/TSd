@@ -1,10 +1,13 @@
 {
   "name": "@tummycrypt/tsd",
-  "version": "0.1.0",
+  "version": "0.1.4",
   "type": "module",
   "description": "Next-Generation Translation System for SvelteKit",
   "scripts": {
     "build": "node build.js",
+    "build:optimized": "node build-optimized.js",
+    "build:analyze": "npm run build:optimized && npm run size",
+    "size": "du -sh dist/ && find dist -type f -name '*.js' -exec du -h {} \\; | sort -hr | head -10",
     "compile-proto": "tsx scripts/compile-proto.ts",
     "lint": "eslint . --ext .ts,.js,.svelte",
     "lint:fix": "eslint . --ext .ts,.js,.svelte --fix",
@@ -16,9 +19,9 @@
     "test:e2e": "jest --testPathPattern=e2e",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "prepare": "husky && npm run build",
+    "prepare": "husky && npm run build:optimized",
     "start:grpc": "node dist/vite/grpc-web-server.js",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build:optimized"
   },
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -57,6 +60,7 @@
   "publishConfig": {
     "access": "public"
   },
+  "sideEffects": false,
   "peerDependencies": {
     "@sveltejs/kit": "^2.0.0",
     "svelte": "^5.0.0",

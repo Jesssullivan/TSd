@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/index.ts"],
+  "sourcesContent": ["export { tsdVitePlugin } from './vite/index.js';\nexport { default as Tsd } from './svelte/Tsd.svelte';\nexport { localeStore, setLocale, getLocale } from './svelte/locale-store.js';\nexport { createTranslationMonad, createAsyncTranslationMonad, chainTranslations, failedTranslation } from './lib/translation-monad.js';\nexport type { TsdConfig, TranslationProvider, Locale, TranslationMonad, TranslationEntry, TranslationMap } from './types.js';\n"],
+  "mappings": "AAAA,SAAS,qBAAqB;AAC9B,SAAoB,WAAXA,gBAAsB;AAC/B,SAAS,aAAa,WAAW,iBAAiB;AAClD,SAAS,wBAAwB,6BAA6B,mBAAmB,yBAAyB;",
+  "names": ["default"]
+}

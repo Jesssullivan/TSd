@@ -3,16 +3,22 @@
 *High performance localization system for SvelteKit*
 
 [![npm version](https://img.shields.io/npm/v/@tummycrypt/tsd.svg)](https://www.npmjs.com/package/@tummycrypt/tsd)
+[![npm bundle size](https://img.shields.io/bundlephobia/min/@tummycrypt/tsd)](https://bundlephobia.com/package/@tummycrypt/tsd)
+[![npm bundle size (gzip)](https://img.shields.io/bundlephobia/minzip/@tummycrypt/tsd)](https://bundlephobia.com/package/@tummycrypt/tsd)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+
+> 📚 **[View llms.txt](./llms.txt)** for comprehensive project documentation following the [llmstxt.org](https://llmstxt.org/) standard.
 
 ## Installation
 
 ```bash
-# npm
-npm install @tummycrypt/tsd
-
 # pnpm
 pnpm add @tummycrypt/tsd
+
+## or: ##
+
+# npm
+npm install @tummycrypt/tsd
 
 # yarn
 yarn add @tummycrypt/tsd
@@ -227,19 +233,57 @@ This project enforces strict code quality standards:
 TSd offers a different approach than traditional i18n libraries:
 
 | Traditional i18n              | TSd                               |
-| ----------------------------- | --------------------------------- |
+|-------------------------------|-----------------------------------|
 | Pre-load all translations     | Load on-demand                    |
 | Key-based (`t('home.title')`) | Content-based (`<Tsd>Home</Tsd>`) |
 | Manual string extraction      | Automatic detection               |
 | Static bundles                | Dynamic loading                   |
 | File-based                    | API-based with caching            |
 
-## 🎯 Performance Considerations
+## 🎯 Performance & Optimization
+
+### Bundle Size
+
+TSd is optimized for minimal bundle impact:
+
+- **~196KB** total package size (down from 208KB)
+- **~20KB** gzipped when bundled
+- **Tree-shakeable** - only import what you use
+- **Code-splitting** friendly with dynamic imports
+
+### Optimization Techniques
+
+1. **Minified JavaScript** - All JS files are pre-minified with esbuild
+2. **No source maps** in production builds
+3. **Peer dependencies** - SvelteKit, Svelte, and Vite are not bundled
+4. **Optional dependencies** - Express/CORS only needed for gRPC server
+5. **Modular exports** - Import only the parts you need:
+   ```js
+   // Import only Svelte components
+   import { Tsd } from '@tummycrypt/tsd/svelte';
+   
+   // Import only Vite plugin
+   import { tsdVitePlugin } from '@tummycrypt/tsd/vite';
+   ```
+
+### Runtime Performance
 
 - **Caching**: All translations are cached locally and in-memory
 - **Deduplication**: Identical strings are translated only once
 - **Streaming**: Real-time updates via SSE or gRPC streaming
-- **Tree-shaking**: Only used translations are included in bundles
+- **Lazy loading**: Translations load on-demand as users navigate
+
+## 📦 Demo & Testing
+
+The `tsd-demo/` directory contains a comprehensive demonstration and testing suite:
+
+```bash
+cd tsd-demo
+pnpm install
+Hm # Run all tests (dev, preview, production)
+```
+
+See the [demo README](./tsd-demo/README.md) for detailed testing instructions.
 
 ## 🤝 Contributing
 

@@ -1,0 +1,1 @@
+{"version":3,"file":"locale-store.d.ts","sourceRoot":"","sources":["../../src/svelte/locale-store.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,MAAM,EAAE,MAAM,aAAa,CAAC;AAkC1C,eAAO,MAAM,WAAW;;;kBASR,CAAC,MAAM,EAAE,MAAM,KAAK,IAAI;CASvC,CAAC;AAEF,wBAAgB,SAAS,CAAC,MAAM,EAAE,MAAM,QA0CvC;AAED,wBAAgB,SAAS,IAAI,MAAM,CAElC"}

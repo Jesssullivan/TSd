@@ -1,0 +1,40 @@
+# Source files
+src/
+scripts/
+build.js
+build-optimized.js
+
+# Development files
+*.spec.ts
+*.test.ts
+*.e2e.ts
+__tests__/
+coverage/
+.husky/
+
+# Config files
+tsconfig.json
+tsconfig.build.json
+.eslintrc.js
+.prettierrc
+jest.config.js
+playwright.config.ts
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# TypeScript
+*.tsbuildinfo
+*.d.ts.map
+
+# Keep only necessary declaration files
+# but remove map files

@@ -21,6 +21,19 @@ export class TsdGrpcClient {
 
   constructor(config: GrpcClientConfig) {
     this.envoyDiscovery = EnvoyDiscovery.getInstance();
+    
+    // Check for configured Envoy endpoint from window config
+    if (typeof window !== 'undefined' && (window as any).__TSD_CONFIG__?.envoy?.endpoint) {
+      const envoyEndpoint = (window as any).__TSD_CONFIG__.envoy.endpoint;
+      console.log(`[TSd] 🎯 Using configured Envoy endpoint: ${envoyEndpoint}`);
+      this.envoyDiscovery.setConfig({
+        endpoint: envoyEndpoint,
+        isEnvoy: true,
+        environment: 'production',
+        protocol: 'grpc-web'
+      });
+    }
+    
     this.envoyConfig = this.envoyDiscovery.getConfig();
 
     // Use discovered endpoint or fallback to origin
@@ -30,10 +43,24 @@ export class TsdGrpcClient {
         `[TSd] 🚀 Using Envoy proxy at ${this.baseUrl} (${this.envoyConfig.environment} environment)`
       );
     } else {
-      this.baseUrl = `${window.location.origin}/grpc`;
-      console.log(
-        `[TSd] 🌐 Using HTTP/JSON at ${this.baseUrl} (${this.envoyConfig.environment} environment)`
-      );
+      // Check if we're in development mode (Vite dev server with gRPC support)
+      const isDevelopment = window.location.hostname === 'localhost' || 
+                           window.location.hostname === '127.0.0.1' ||
+                           window.location.hostname.startsWith('192.168.') ||
+                           window.location.hostname.includes('.local');
+      
+      if (isDevelopment) {
+        this.baseUrl = `${window.location.origin}/grpc`;
+        console.log(
+          `[TSd] 🌐 Using development gRPC server at ${this.baseUrl}`
+        );
+      } else {
+        // In production, use the SvelteKit API endpoint
+        this.baseUrl = `${window.location.origin}/api`;
+        console.log(
+          `[TSd] 🌐 Using production API at ${this.baseUrl}`
+        );
+      }
     }
 
     this.logConnectionInfo();
@@ -67,18 +94,31 @@ export class TsdGrpcClient {
         headers['grpc-timeout'] = '10S';
       }
 
-      const url = this.envoyConfig.isEnvoy
-        ? `${this.baseUrl}/tsd.TranslationService/Translate`
-        : `${this.baseUrl}/tsd.TranslationService/Translate`;
+      let url: string;
+      let requestBody: any;
+      
+      if (this.envoyConfig.isEnvoy || this.baseUrl.includes('/grpc')) {
+        // Use gRPC-style endpoint for Envoy or development
+        url = `${this.baseUrl}/tsd.TranslationService/Translate`;
+        requestBody = {
+          text,
+          native_locale: nativeLocale,
+          target_locale: targetLocale,
+        };
+      } else {
+        // Use SvelteKit API endpoint for production
+        url = `${this.baseUrl}/translate`;
+        requestBody = {
+          text,
+          from: nativeLocale,
+          to: targetLocale,
+        };
+      }
 
       const response = await fetch(url, {
         method: 'POST',
         headers,
-        body: JSON.stringify({
-          text,
-          native_locale: nativeLocale,
-          target_locale: targetLocale,
-        }),
+        body: JSON.stringify(requestBody),
       });
 
       const endTime = performance.now();
@@ -92,10 +132,12 @@ export class TsdGrpcClient {
       }
 
       const data = await response.json();
-      const translated = data.translated_text;
+      
+      // Handle different response formats
+      const translated = data.translated_text || data.translated || text;
 
       console.log(
-        `[TSd] ✅ Request #${requestId} completed in ${duration}ms via ${this.envoyConfig.isEnvoy ? 'Envoy' : 'HTTP'}`
+        `[TSd] ✅ Request #${requestId} completed in ${duration}ms via ${this.envoyConfig.isEnvoy ? 'Envoy' : this.baseUrl.includes('/grpc') ? 'gRPC' : 'API'}`
       );
       console.log(`[TSd] 📥 Translation: "${text}" → "${translated}"`);
 
@@ -145,7 +187,18 @@ export class TsdGrpcClient {
     }
 
     // Create Server-Sent Events connection
-    const url = new URL(`${this.baseUrl}/tsd.TranslationService/SubscribeTranslations`);
+    let sseUrl: string;
+    if (this.envoyConfig.isEnvoy || this.baseUrl.includes('/grpc')) {
+      sseUrl = `${this.baseUrl}/tsd.TranslationService/SubscribeTranslations`;
+    } else {
+      // For production API, we might not have SSE support - skip subscription
+      console.log('[TSd] SSE not available in production mode, skipping real-time updates');
+      return () => {
+        this.subscriptions.delete(id);
+      };
+    }
+    
+    const url = new URL(sseUrl);
     if (locales) {
       url.searchParams.set('locales', locales.join(','));
     }

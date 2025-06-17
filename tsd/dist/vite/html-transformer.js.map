@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/vite/html-transformer.ts"],
+  "sourcesContent": ["import type { TsdConfig } from '../types.js';\n\nexport function transformHtml(html: string, config: Required<TsdConfig>): string {\n  // Support both %paraglide.lang% and %tsd.lang% patterns\n  const langPattern = /%(paraglide|tsd)\\.lang%/g;\n\n  // Get locale from the URL or default\n  const locale = config.defaultLocale;\n\n  let transformed = html.replace(langPattern, locale);\n\n  // Inject TSd runtime script\n  if (!transformed.includes('/__tsd/runtime.js')) {\n    transformed = transformed.replace(\n      '</head>',\n      `<script type=\"module\" src=\"/__tsd/runtime.js\"></script>\\n</head>`\n    );\n  }\n\n  return transformed;\n}\n"],
+  "mappings": ";;AAEO,SAAS,cAAc,MAAc,QAAqC;AAE/E,QAAM,cAAc;AAGpB,QAAM,SAAS,OAAO;AAEtB,MAAI,cAAc,KAAK,QAAQ,aAAa,MAAM;AAGlD,MAAI,CAAC,YAAY,SAAS,mBAAmB,GAAG;AAC9C,kBAAc,YAAY;AAAA,MACxB;AAAA,MACA;AAAA;AAAA,IACF;AAAA,EACF;AAEA,SAAO;AACT;AAlBgB;",
+  "names": []
+}

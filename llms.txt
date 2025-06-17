@@ -1,0 +1,216 @@
+# TSd (Translation System for SvelteKit)
+
+> Next-generation translation system for SvelteKit applications with real-time, just-in-time translation capabilities.
+
+## Project Overview
+
+TSd provides a comprehensive translation solution for SvelteKit applications with support for multiple backends (LibreTranslate, gRPC), intelligent caching, and production-ready infrastructure.
+
+## Key Features
+
+- **Just-in-Time Translation**: Translates content on-demand as users navigate
+- **Intelligent Caching**: Builds translation cache incrementally, reducing API calls
+- **Multiple Backends**: Supports LibreTranslate API and gRPC services
+- **Production Ready**: Includes Envoy proxy support for gRPC-Web in production
+- **Developer Friendly**: Hot reload, TypeScript support, comprehensive testing
+
+## Architecture
+
+### Core Components
+
+1. **Translation Monad** (`src/lib/translation-monad.ts`)
+   - Functional approach to translation state management
+   - Handles async translation operations with proper error handling
+   - Implements caching logic
+
+2. **gRPC Client** (`src/client/grpc-client.ts`)
+   - WebSocket-based gRPC client for browser environments
+   - Automatic fallback to HTTP API in production
+   - Environment detection (development/production)
+
+3. **Vite Plugin** (`src/vite/index.ts`)
+   - Integrates translation system into SvelteKit build process
+   - Configures LibreTranslate endpoints
+   - Handles Envoy proxy discovery
+
+4. **Svelte Components** (`src/svelte/`)
+   - `Tsd.svelte`: Main translation component with observer pattern
+   - `locale-store.ts`: Reactive locale management
+
+### File Structure
+
+```
+tsd/
+├── src/
+│   ├── index.ts              # Main entry point
+│   ├── types.ts              # TypeScript definitions
+│   ├── client/
+│   │   └── grpc-client.ts    # gRPC-Web client implementation
+│   ├── lib/
+│   │   ├── translation-monad.ts    # Core translation logic
+│   │   ├── libretranslate-client.ts # LibreTranslate API client
+│   │   └── envoy-discovery.ts      # Envoy proxy detection
+│   ├── svelte/
+│   │   ├── Tsd.svelte        # Translation component
+│   │   ├── locale-store.ts   # Locale state management
+│   │   └── index.ts          # Svelte exports
+│   ├── vite/
+│   │   ├── index.ts          # Vite plugin entry
+│   │   ├── translation-manager.ts # Translation coordination
+│   │   ├── grpc-web-server.ts    # Development gRPC server
+│   │   └── html-transformer.ts   # HTML manipulation
+│   └── proto/
+│       └── translation.proto # gRPC service definition
+├── tsd-demo/                 # Demonstration application
+│   ├── src/
+│   │   ├── routes/          # SvelteKit routes
+│   │   ├── app.html         # App template
+│   │   └── hooks.server.ts  # Server hooks
+│   ├── scripts/             # Test automation
+│   │   ├── test-dev.js      # Development mode tests
+│   │   ├── test-preview.js  # Preview mode tests
+│   │   ├── test-envoy.js    # Production tests
+│   │   └── test-utils.js    # Test utilities
+│   ├── Containerfile        # Production container
+│   ├── Containerfile.grpc   # gRPC service container
+│   ├── podman-compose.yml   # Full stack configuration
+│   └── envoy.yaml          # Envoy proxy config
+```
+
+## Configuration
+
+### Vite Plugin Options
+
+```typescript
+interface TsdVitePluginOptions {
+  translationProvider: {
+    type: 'libretranslate' | 'grpc';
+    apiUrl?: string;      // LibreTranslate URL
+    apiKey?: string;      // Optional API key
+  };
+  defaultLocale: string;  // Default language
+  supportedLocales: string[]; // Available languages
+  envoy?: {
+    endpoint?: string;    // Envoy proxy URL
+    autoDiscover?: boolean;
+  };
+}
+```
+
+### Environment Variables
+
+- `VITE_LIBRETRANSLATE_URL`: LibreTranslate API endpoint
+- `VITE_ENVOY_ENDPOINT`: Envoy proxy endpoint for gRPC-Web
+- `NODE_ENV`: Environment mode (development/production)
+
+## Usage
+
+### Basic Setup
+
+```typescript
+// vite.config.ts
+import { tsdVitePlugin } from '@tummycrypt/tsd/vite';
+
+export default {
+  plugins: [
+    tsdVitePlugin({
+      translationProvider: {
+        type: 'libretranslate',
+        apiUrl: 'https://libretranslate.com'
+      },
+      defaultLocale: 'en',
+      supportedLocales: ['en', 'es', 'fr', 'de', 'ja', 'zh']
+    })
+  ]
+};
+```
+
+### In Components
+
+```svelte
+<script>
+  import { Tsd } from '@tummycrypt/tsd/svelte';
+</script>
+
+<Tsd>Welcome to our application</Tsd>
+```
+
+## Production Deployment
+
+### Container Stack
+
+1. **LibreTranslate**: Translation service
+2. **Envoy Proxy**: gRPC-Web support
+3. **gRPC Service**: Translation coordination
+4. **SvelteKit App**: Main application
+5. **Caddy**: Web server/reverse proxy
+
+### Deployment Commands
+
+```bash
+# Build and start production
+pnpm prod:build
+pnpm prod:up
+
+# Monitor
+pnpm prod:logs
+pnpm prod:status
+```
+
+## Testing
+
+Comprehensive test suites validate all deployment modes:
+
+- **Development**: Hot reload, external API
+- **Preview**: Production build, local serving
+- **Production**: Full container stack with Envoy
+
+Run all tests: `pnpm test`
+
+## Package Optimization
+
+The package is optimized for size through:
+- Tree-shaking with ESBuild
+- Minification of JavaScript and Svelte files
+- Removal of source maps in production
+- Peer dependency externalization
+- Selective dependency inclusion
+
+Current size: ~196KB (from 208KB unoptimized)
+
+## Contributing
+
+1. Fork and clone the repository
+2. Install dependencies: `pnpm install`
+3. Make changes in `tsd/` or `tsd-demo/`
+4. Run tests: `pnpm test`
+5. Build optimized: `pnpm build:optimized`
+6. Submit pull request
+
+## Design Principles
+
+1. **Just-in-Time**: Only translate what users actually see
+2. **Progressive Enhancement**: Works without JavaScript, enhances with it
+3. **Developer Experience**: TypeScript, hot reload, clear APIs
+4. **Production Ready**: Tested container deployments
+5. **Efficient**: Intelligent caching, minimal bundle size
+
+## Technical Decisions
+
+- **Monadic Pattern**: Ensures predictable translation state
+- **gRPC-Web**: Industry standard for browser-server communication
+- **Envoy Proxy**: Production-grade HTTP/2 and gRPC proxy
+- **Podman**: OCI-compliant container runtime
+- **ESBuild**: Fast, efficient bundling with tree-shaking
+
+## Future Enhancements
+
+- [ ] WebAssembly translation engine
+- [ ] Edge deployment support
+- [ ] Additional translation providers
+- [ ] Offline translation support
+- [ ] AI-powered context awareness
+
+---
+
+For more information, visit: https://github.com/jesssullivan/TSd
