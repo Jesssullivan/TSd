@@ -287,13 +287,172 @@ See the [demo README](./tsd-demo/README.md) for detailed testing instructions.
 
 ## 🤝 Contributing
 
-Contributions are welcome! Here's how you can contribute:
+TSd is developed as part of the [Zentaisei monorepo](https://gitlab.com/tinyland/zentaisei) but accepts community contributions through this GitHub repository. Here's how the two-way sync works:
 
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/my-feature`
-3. Commit your changes: `git commit -am 'Add my feature'`
-4. Push to the branch: `git push origin feature/my-feature`
-5. Submit a pull request
+### 🔄 Two-Way Synchronization System
+
+This repository is **automatically synchronized** with the main Zentaisei monorepo:
+
+```
+┌─────────────────────┐     ┌─────────────────────┐     ┌─────────────────────┐
+│   Zentaisei Repo    │────▶│   Nx Sync Agent     │────▶│   GitHub TSd Repo   │
+│   (Source of Truth) │     │   (Automated Sync)  │     │   (Community PRs)   │
+└─────────────────────┘     └─────────────────────┘     └─────────────────────┘
+          ▲                                                        │
+          │                  ┌─────────────────────┐              │
+          └──────────────────│   Gerrit Review     │◀─────────────┘
+                             │   (PR Integration)  │
+                             └─────────────────────┘
+```
+
+### 📥 How to Contribute
+
+#### 1. **Standard Community PRs** (Recommended)
+
+For most contributions, use the standard GitHub workflow:
+
+1. **Fork this repository**
+2. **Create a feature branch**: `git checkout -b feature/my-awesome-feature`
+3. **Make your changes** with comprehensive tests
+4. **Ensure all tests pass**: `npm test`
+5. **Submit a pull request** with detailed description
+
+**What happens next:**
+- Your PR is automatically detected by the Nx sync agent
+- Changes are integrated into the Zentaisei monorepo via Gerrit
+- After review and approval, changes flow back to this repo
+- Your contribution is credited in both repositories
+
+#### 2. **Direct Monorepo PRs** (For Core Contributors)
+
+If you're working on core functionality:
+
+1. **Clone the monorepo**: `git clone https://gitlab.com/tinyland/zentaisei.git`
+2. **Work in the TSd package**: `cd packages/tsd`
+3. **Follow monorepo guidelines**: See [contribution guide](https://gitlab.com/tinyland/zentaisei/-/blob/main/CONTRIBUTING.md)
+4. **Submit merge request** to the monorepo
+
+### 🏷️ PR Labels for Better Processing
+
+Use these labels to help the sync agent process your PR:
+
+- `upstream-proposal`: Mark for inclusion in the main monorepo
+- `community-fix`: Bug fixes from the community
+- `enhancement`: New features or improvements
+- `documentation`: Documentation-only changes
+- `breaking-change`: Changes that break backward compatibility
+
+### 🧪 Testing Requirements
+
+All contributions must include:
+
+#### **Unit Tests**
+```bash
+npm test                # Run all tests
+npm run test:watch      # Watch mode for development
+npm run test:coverage   # Generate coverage report
+```
+
+#### **Integration Tests**
+```bash
+npm run test:integration # Test with real translation APIs
+npm run test:e2e        # End-to-end testing
+```
+
+#### **Demo Testing**
+```bash
+cd tsd-demo
+npm run test:all        # Test all environments (dev, preview, production)
+```
+
+### 📋 Contribution Checklist
+
+Before submitting your PR, ensure:
+
+- [ ] **Tests pass**: All existing tests continue to pass
+- [ ] **New tests added**: Your changes are covered by tests
+- [ ] **Demo updated**: If applicable, update the demo application
+- [ ] **Documentation updated**: README, code comments, and docs/ updated
+- [ ] **TypeScript types**: Proper types for all new code
+- [ ] **Performance impact**: No significant performance regressions
+- [ ] **Security review**: No introduction of vulnerabilities
+- [ ] **Breaking changes**: Clearly documented if any
+
+### 🎯 Focus Areas for Contributions
+
+We especially welcome contributions in:
+
+1. **Translation Providers**: New provider integrations
+2. **Framework Support**: Beyond SvelteKit (React, Vue, etc.)
+3. **Performance Optimizations**: Bundle size, runtime performance
+4. **Documentation**: Examples, tutorials, API docs
+5. **Testing**: More comprehensive test coverage
+6. **Accessibility**: A11y improvements
+7. **Internationalization**: RTL support, complex scripts
+
+### 🔒 Security Considerations
+
+When contributing:
+
+- **Never commit secrets**: API keys, tokens, or credentials
+- **Validate inputs**: All user inputs must be properly validated
+- **Review dependencies**: New dependencies require security review
+- **Report vulnerabilities**: Use private disclosure for security issues
+
+### 🐛 Bug Reports
+
+For bug reports, please include:
+
+1. **TSd version**: `npm list @tummycrypt/tsd`
+2. **Environment**: Node.js version, OS, framework version
+3. **Reproduction steps**: Minimal example to reproduce
+4. **Expected behavior**: What should happen
+5. **Actual behavior**: What actually happens
+6. **Error logs**: Full error messages and stack traces
+
+### 💡 Feature Requests
+
+For feature requests:
+
+1. **Use case**: Describe the problem you're trying to solve
+2. **Proposed solution**: How would you like it to work?
+3. **Alternatives**: What alternatives have you considered?
+4. **Implementation**: Are you willing to implement it?
+
+### 🏆 Recognition
+
+Contributors are recognized in:
+- Both the GitHub repo and Zentaisei monorepo
+- Release notes and changelogs
+- Annual contributor reports
+- Special mentions for significant contributions
+
+### 📞 Getting Help
+
+- **GitHub Issues**: For bugs, features, and general questions
+- **Discussions**: For community Q&A and best practices
+- **Monorepo Issues**: For core development questions
+
+### 🚀 Development Setup
+
+```bash
+# Clone and setup
+git clone https://github.com/jesssullivan/tsd.git
+cd tsd
+npm install
+
+# Run tests
+npm test
+
+# Start demo
+cd tsd-demo
+npm run dev
+
+# Build package
+npm run build
+```
+
+Thank you for contributing to TSd! 🎉
 
 ## 📦 Deployment
 
