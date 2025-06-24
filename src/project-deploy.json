@@ -1,0 +1,29 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "tsd-deploy",
+  "targets": {
+    "deploy:standalone": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node tools/scripts/deploy-tsd-standalone.js",
+        "cwd": "{workspaceRoot}"
+      },
+      "configurations": {
+        "dry-run": {
+          "command": "DRY_RUN=true node tools/scripts/deploy-tsd-standalone.js"
+        }
+      }
+    },
+    "deploy:standalone:ci": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "node tools/scripts/deploy-tsd-standalone.js",
+          "cd .tmp-tsd-deploy && git push -u origin main --force"
+        ],
+        "cwd": "{workspaceRoot}",
+        "parallel": false
+      }
+    }
+  }
+}

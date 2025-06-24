@@ -1,0 +1,45 @@
+# Source files
+src/
+scripts/
+
+# Test files
+*.test.ts
+*.spec.ts
+__tests__/
+e2e/
+coverage/
+.nyc_output/
+
+# Config files
+.eslintrc*
+.prettierrc*
+jest.config.*
+tsconfig.*
+.husky/
+
+# Build files
+build.js
+*.log
+
+# Development files
+.tsd-cache/
+.env
+.env.local
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Git files
+.git/
+.gitignore
+
+# Documentation source
+docs/
+
+# Misc
+.DS_Store
+Thumbs.db
+*.map

@@ -1,0 +1,173 @@
+{
+  "name": "@tinyland/tsd",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/tsd/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/tsd",
+        "commands": [
+          "cd packages/tsd && node build.js --outputPath=../../dist/packages/tsd"
+        ]
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs @tinyland/tsd {args.ver} {args.tag}",
+      "dependsOn": ["build"]
+    },
+    "publish:npm": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node scripts/publish-npm.cjs",
+        "cwd": "packages/tsd"
+      },
+      "dependsOn": ["build"]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "packages/tsd/jest.config.cjs"
+      }
+    },
+    "test:e2e": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd packages/tsd && jest --testPathPattern=e2e"
+      }
+    },
+    "test:http": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd packages/tsd && LIBRETRANSLATE_URL=$LIBRETRANSLATE_URL LIBRETRANSLATE_API_KEY=$LIBRETRANSLATE_API_KEY jest --testPathPattern=e2e/translation-system"
+      },
+      "configurations": {
+        "local": {
+          "command": "cd packages/tsd && LIBRETRANSLATE_URL=http://localhost:5000 jest --testPathPattern=e2e/translation-system"
+        }
+      }
+    },
+    "test:grpc": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd packages/tsd && jest --testPathPattern=e2e/grpc-integration"
+      }
+    },
+    "test:coverage": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "packages/tsd/jest.config.cjs",
+        "coverage": true,
+        "coverageReporters": ["text", "lcov", "html"]
+      }
+    },
+    "compile-proto": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd packages/tsd && tsx scripts/compile-proto.ts"
+      }
+    },
+    "start:grpc": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd packages/tsd && node dist/vite/grpc-web-server.js"
+      },
+      "dependsOn": ["build"]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "eval:full": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd packages/tsd && node scripts/eval-runner.cjs full --verbose",
+        "forwardAllArgs": false
+      },
+      "configurations": {
+        "debug": {
+          "command": "cd packages/tsd && node scripts/eval-runner.cjs full --verbose --no-cleanup"
+        }
+      }
+    },
+    "eval:quick": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd packages/tsd && node scripts/eval-runner.cjs quick --verbose",
+        "forwardAllArgs": false
+      },
+      "configurations": {
+        "debug": {
+          "command": "cd packages/tsd && node scripts/eval-runner.cjs quick --verbose --no-cleanup"
+        }
+      }
+    },
+    "eval:pbt": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd packages/tsd && node scripts/eval-runner.cjs pbt --verbose",
+        "forwardAllArgs": false
+      }
+    },
+    "eval:container": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd packages/tsd && node scripts/eval-runner.cjs container --verbose",
+        "forwardAllArgs": false
+      }
+    },
+    "eval:adoption": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd packages/tsd && node scripts/eval-runner.cjs adoption --verbose",
+        "forwardAllArgs": false
+      }
+    },
+    "eval:ci": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd packages/tsd && node scripts/eval-runner.cjs ci",
+        "forwardAllArgs": false
+      }
+    },
+    "doctor": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd packages/tsd && node scripts/podman-doctor.cjs"
+      }
+    },
+    "check-podman": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd packages/tsd && node scripts/check-podman.cjs"
+      }
+    },
+    "deploy:standalone": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node tools/scripts/deploy-tsd-standalone.js",
+        "cwd": "{workspaceRoot}"
+      },
+      "configurations": {
+        "dry-run": {
+          "command": "DRY_RUN=true node tools/scripts/deploy-tsd-standalone.js"
+        }
+      }
+    },
+    "deploy:standalone:ci": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "node tools/scripts/deploy-tsd-standalone.js",
+          "cd .tmp-tsd-deploy && git push -u origin main --force || echo 'Push failed, check authentication'"
+        ],
+        "cwd": "{workspaceRoot}",
+        "parallel": false
+      }
+    }
+  }
+}
