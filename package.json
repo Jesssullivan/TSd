@@ -1,0 +1,44 @@
+{
+  "name": "@tinyland/tsd",
+  "version": "0.1.5",
+  "description": "Translation Service for SvelteKit - Extracted from Zentaisei monorepo",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tinyland/tsd.git"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
+  },
+  "main": "./src/index.js",
+  "module": "./src/index.js",
+  "types": "./src/index.d.ts",
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "build": "cd src && npm run build",
+    "test": "cd src && npm test",
+    "lint": "cd src && npm run lint",
+    "sync:upstream": "npm run sync:pull && npm run sync:test",
+    "sync:pull": "git subtree pull --prefix=src monorepo split-tsd --squash",
+    "sync:push": "npm run sync:test && git push origin main",
+    "sync:test": "npm test",
+    "demo:dev": "cd demo && npm run dev",
+    "demo:build": "cd demo && npm run build",
+    "prepare": "husky install",
+    "registry:setup": "verdaccio --config .verdaccio.yaml",
+    "publish:canary": "npm version prerelease --preid=canary.$(git rev-parse --short HEAD) --no-git-tag-version && npm publish --tag canary"
+  },
+  "devDependencies": {
+    "@nx/devkit": "^19.0.0",
+    "@nx/plugin": "^19.0.0",
+    "@nx/jest": "^19.0.0",
+    "@nx/eslint": "^19.0.0",
+    "@nx/workspace": "^19.0.0",
+    "nx": "^19.0.0",
+    "husky": "^9.0.0",
+    "lint-staged": "^15.0.0",
+    "verdaccio": "^5.0.0"
+  }
+}

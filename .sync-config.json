@@ -1,0 +1,22 @@
+{
+  "upstream": {
+    "repository": "https://gitlab.tinyland.dev/zentaisei.git",
+    "branch": "main",
+    "prefix": "packages/tsd"
+  },
+  "downstream": {
+    "organization": "tinyland",
+    "repository": "tsd"
+  },
+  "sync": {
+    "strategy": "subtree",
+    "preserveHistory": true,
+    "autoSync": true,
+    "syncInterval": "0 */6 * * *"
+  },
+  "gerrit": {
+    "enabled": true,
+    "server": "https://gerrit.tinyland.dev",
+    "project": "zentaisei"
+  }
+}
